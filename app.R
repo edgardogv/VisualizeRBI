@@ -281,13 +281,15 @@ server <- function(input, output, session) {
           }
         }
       } else if(tipo_grafico == "puntos" & !is.null(sel_grafico)){
-        datos <- datos %>%
-          filter(
-            .data[[input$eje_x]] >= sel_grafico$`xaxis.range[0]`,
-            .data[[input$eje_x]] <= sel_grafico$`xaxis.range[1]`,
-            .data[[input$eje_y]] >= sel_grafico$`yaxis.range[0]`,
-            .data[[input$eje_y]] <= sel_grafico$`yaxis.range[1]`
-          )
+        if(!any(names(sel_grafico) %in% c("width", "height"))){
+          datos <- datos %>%
+            filter(
+              .data[[input$eje_x]] >= sel_grafico$`xaxis.range[0]`,
+              .data[[input$eje_x]] <= sel_grafico$`xaxis.range[1]`,
+              .data[[input$eje_y]] >= sel_grafico$`yaxis.range[0]`,
+              .data[[input$eje_y]] <= sel_grafico$`yaxis.range[1]`
+            )
+        }
       }
     }
     return(datos)
@@ -379,6 +381,10 @@ server <- function(input, output, session) {
         "Total Filas"
       )
     }
+  })
+  
+  session$onSessionEnded(function() {
+    stopApp()
   })
   
 }
